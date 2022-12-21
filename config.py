@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-# Depth of the game tree
-depth = 6 # Will even number be better?
+# Depth of the game tree, will even number be better?
+orgDepth = 4
 
-# Time Limit for each round (in seconds)
-maxTime = 150
+# Warning Time
+# Decreases depth by 1 after time has passed
+warnTime = 135
 
 # Payoff values inspired by:
 # https://www.chessprogramming.org/Simplified_Evaluation_Function
