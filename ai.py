@@ -3,12 +3,16 @@
 import antichess
 import chess
 import math
-import time
+import random
 
 from config import *
 
+# White always maximize, Black always minimize
 def payoff(board):
-	score = 0
+	mgScore = 0
+	egScore = 0
+	gamePhase = 0
+
 	for sq in chess.SQUARES:
 		piece = board.piece_at(sq)
 		if not piece:
@@ -17,47 +21,29 @@ def payoff(board):
 		pos = -1
 		if piece.color == chess.WHITE:
 			pos = (7 - int(sq / 8)) * 8 + sq % 8
-			
-			if piece.piece_type == chess.PAWN:
-				score += (P + pawn[pos])
-			elif piece.piece_type == chess.KNIGHT:
-				score += (N + knight[pos])
-			elif piece.piece_type == chess.BISHOP:
-				score += (B + bishop[pos])
-			elif piece.piece_type == chess.ROOK:
-				score += (R + rook[pos])
-			elif piece.piece_type == chess.QUEEN:
-				score += (Q + queen[pos])
-			elif piece.piece_type == chess.KING and antichess.remainingPieces(board) > 12:
-				score += (K + king_mid[pos])
-			else:
-				score += (K + king_end[pos])
-				
+			mgScore += (mg_pc_val[piece.piece_type - 1] + mg_pos_val[piece.piece_type - 1][pos])
+			egScore += (eg_pc_val[piece.piece_type - 1] + eg_pos_val[piece.piece_type - 1][pos])
+
 		else:
 			pos = int(sq / 8) * 8 + (7 - sq % 8)
-		
-			if piece.piece_type == chess.PAWN:
-				score -= (P + pawn[pos])
-			elif piece.piece_type == chess.KNIGHT:
-				score -= (N + knight[pos])
-			elif piece.piece_type == chess.BISHOP:
-				score -= (B + bishop[pos])
-			elif piece.piece_type == chess.ROOK:
-				score -= (R + rook[pos])
-			elif piece.piece_type == chess.QUEEN:
-				score -= (Q + queen[pos])
-			elif piece.piece_type == chess.KING and antichess.remainingPieces(board) > 12:
-				score -= (K + king_mid[pos])
-			else:
-				score -= (K + king_end[pos])
+			mgScore -= (mg_pc_val[piece.piece_type - 1] + mg_pos_val[piece.piece_type - 1][pos])
+			egScore -= (eg_pc_val[piece.piece_type - 1] + eg_pos_val[piece.piece_type - 1][pos])
+
+		gamePhase += gamePhaseInc[piece.piece_type - 1]
 
 	# Handles game board that is game over but the king is not captured
 	if board.is_game_over():
 		if board.outcome().winner == chess.WHITE:
-			score += K
+			mgScore += mg_pc_val[5]
+			egScore += eg_pc_val[5]
 		elif board.outcome().winner == chess.BLACK:
-			score -= K
+			mgScore -= mg_pc_val[5]
+			egScore -= eg_pc_val[5]
 
+	mgPhase = min(egThreshold, gamePhase)
+	egPhase = egThreshold - mgPhase
+	score = (mgScore * mgPhase + egScore * egPhase) / egThreshold
+	
 	return score
 
 # White is always the maximizing player
@@ -71,6 +57,8 @@ def minimax(board, depth, alpha, beta, player):
 		maxBoard = board.copy()
 		
 		moves = antichess.legal_moves(board)
+		random.shuffle(moves)
+
 		for move in moves:
 			board.push(move)
 
@@ -86,7 +74,7 @@ def minimax(board, depth, alpha, beta, player):
 				maxBoard = rBoard
 
 			board.pop()
-				
+
 			alpha = max(alpha, rScore)
 			if beta <= alpha:
 				break
