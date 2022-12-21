@@ -8,9 +8,6 @@ import time
 from config import *
 
 def payoff(board):
-#	if board.is_game_over():
-#		# TODO
-	
 	score = 0
 	for sq in chess.SQUARES:
 		piece = board.piece_at(sq)
@@ -54,8 +51,13 @@ def payoff(board):
 			else:
 				score -= (K + king_end[pos])
 
-#	print(board, score)
-#	print()
+	# Handles game board that is game over but the king is not captured
+	if board.is_game_over():
+		if board.outcome().winner == chess.WHITE:
+			score += K
+		elif board.outcome().winner == chess.BLACK:
+			score -= K
+
 	return score
 
 # White is always the maximizing player
@@ -68,12 +70,21 @@ def minimax(board, depth, alpha, beta, player):
 		maxScore = -math.inf
 		maxBoard = board.copy()
 		
-		for move in antichess.legal_moves(board):
+		moves = antichess.legal_moves(board)
+		for move in moves:
 			board.push(move)
-			rScore, rBoard = minimax(board, depth - 1, alpha, beta, chess.BLACK)
+
+			# Since it is often in antichess that moves were limited due to captures,
+			# we do not decrease the depth to allow more searches.
+			if len(moves) <= 2:
+				rScore, rBoard = minimax(board, depth, alpha, beta, chess.BLACK)
+			else:
+				rScore, rBoard = minimax(board, depth - 1, alpha, beta, chess.BLACK)
+
 			if rScore > maxScore:
 				maxScore = rScore
 				maxBoard = rBoard
+
 			board.pop()
 				
 			alpha = max(alpha, rScore)
@@ -86,12 +97,21 @@ def minimax(board, depth, alpha, beta, player):
 		minScore = math.inf
 		minBoard = board.copy()
 		
-		for move in antichess.legal_moves(board):
+		moves = antichess.legal_moves(board)
+		for move in moves:
 			board.push(move)
-			rScore, rBoard = minimax(board, depth - 1, alpha, beta, chess.WHITE)
+
+			# Since it is often in antichess that moves were limited due to captures,
+			# we do not decrease the depth to allow more searches.
+			if len(moves) <= 2:
+				rScore, rBoard = minimax(board, depth, alpha, beta, chess.WHITE)
+			else:
+				rScore, rBoard = minimax(board, depth - 1, alpha, beta, chess.WHITE)
+
 			if rScore < minScore:
 				minScore = rScore
 				minBoard = rBoard
+
 			board.pop()
 
 			beta = min(beta, rScore)
@@ -103,24 +123,13 @@ def minimax(board, depth, alpha, beta, player):
 def validate(board, move):
 	return move in antichess.legal_moves(board)
 
-# TODO: Add TLE
-# TODO: New file (config.py) for configurations
-def getBestMove(board):
-	# Configurables
-#	maxTime = 150 # 2.5 mins
-#	startTime = time.time()
-	
+def getBestMove(board, depth):
 	player = board.turn
 	maxScore, maxBoard = minimax(board, depth, -math.inf, math.inf, player)
 
-	# TODO: Handle No possible moves
 	bestMove = antichess.legal_moves(board)[0]
 	
 	try:
-		
-#		print(maxBoard)
-#		print(maxBoard.move_stack)
-		
 		# Handle first move
 		if len(board.move_stack) == 0:
 			bestMove = maxBoard.move_stack[0]
