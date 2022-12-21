@@ -18,17 +18,3 @@ def remainingPieces(board):
 			c += 1
 			
 	return c
-
-
-#board = chess.Board()
-#a = chess.Move.from_uci("a2a4")
-#board.push(a)
-#
-#print(antichess_legal_moves())
-#
-#b = chess.Move.from_uci("b7b5")
-#board.push(b)
-#
-#print(antichess_legal_moves())
-#
-#print(board)
