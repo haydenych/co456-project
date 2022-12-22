@@ -2,7 +2,9 @@
 
 import ai
 import chess
+import config
 import sys
+import time
 
 def inputMove(board):
 	move = input()
@@ -10,8 +12,15 @@ def inputMove(board):
 	# Assume judge will handle all invalid cases
 	board.push(chess.Move.from_uci(move))
 
-def aiMove(board):
-	bestMove = ai.getBestMove(board)
+def aiMove(board, timeElapsed):
+	# Reduce search depth as time limit approaches
+	if timeElapsed >= config.warnTime2:
+		bestMove = ai.getBestMove(board, config.orgDepth - 2)
+	elif timeElapsed >= config.warnTime1:
+		bestMove = ai.getBestMove(board, config.orgDepth - 1)
+	else:
+		bestMove = ai.getBestMove(board, config.orgDepth)
+
 	board.push(bestMove)
 	print(bestMove)
 
@@ -24,18 +33,20 @@ def main(argv):
 		player = chess.BLACK
 	
 	board = chess.Board()
+	timeElapsed = 0
 
 	while (True):
 		if (board.turn == player):
-			aiMove(board)
+			startTime = time.time()
+			aiMove(board, timeElapsed)
+			endTime = time.time()
+			timeElapsed += (endTime - startTime)
+			
 		else:
 			inputMove(board)
 		
 		if board.is_game_over():
 			print(board.outcome().result())
 			break
-
-#		print(board)
-#		print()
 			
 main(sys.argv)
