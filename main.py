@@ -13,7 +13,10 @@ def inputMove(board):
 	board.push(chess.Move.from_uci(move))
 
 def aiMove(board, timeElapsed):
-	if timeElapsed >= config.warnTime:
+	# Reduce search depth as time limit approaches
+	if timeElapsed >= config.warnTime2:
+		bestMove = ai.getBestMove(board, config.orgDepth - 2)
+	elif timeElapsed >= config.warnTime1:
 		bestMove = ai.getBestMove(board, config.orgDepth - 1)
 	else:
 		bestMove = ai.getBestMove(board, config.orgDepth)
