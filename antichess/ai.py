@@ -132,6 +132,7 @@ def getBestMove(board, depth):
 
 		if not validate(board, bestMove):
 			raise Exception(f"Move ${bestMove} is invalid")
+
 	except:
 		# Perform a random move on error
 		bestMove = moves[0]
