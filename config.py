@@ -9,9 +9,7 @@ warnTime1 = 105
 warnTime2 = 150
 
 # Payoff values inspired by:
-# https://www.chessprogramming.org/Simplified_Evaluation_Function
 # https://www.chessprogramming.org/PeSTO%27s_Evaluation_Function
-# https://www.youtube.com/watch?v=wNLuTEr0M20
 
 # Payoffs for the pieces
 # Pawn, Knight, Bishop, Rook, Queen, King
