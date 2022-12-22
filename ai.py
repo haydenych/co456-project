@@ -17,7 +17,7 @@ def payoff(board):
 		piece = board.piece_at(sq)
 		if not piece:
 			continue
-		
+
 		pos = -1
 		if piece.color == chess.WHITE:
 			pos = (7 - int(sq / 8)) * 8 + sq % 8
@@ -112,27 +112,27 @@ def validate(board, move):
 	return move in antichess.legal_moves(board)
 
 def getBestMove(board, depth):
-	player = board.turn
-	maxScore, maxBoard = minimax(board, depth, -math.inf, math.inf, player)
+	moves = antichess.legal_moves(board)
 
-	bestMove = antichess.legal_moves(board)[0]
-	
+	# Safe computation time if only one move is feasible
+	if len(moves) == 1:
+		return moves[0]
+
+	player = board.turn
+	rScore, rBoard = minimax(board, depth, -math.inf, math.inf, player)
+
+	bestMove = moves[0]
 	try:
 		# Handle first move
 		if len(board.move_stack) == 0:
-			bestMove = maxBoard.move_stack[0]
-	
+			bestMove = rBoard.move_stack[0]
+
 		else:
-			for _ in range(depth):
-				bestMove = maxBoard.pop()
-				if board.peek() == maxBoard.peek():
-					break
-				
+			bestMove = rBoard.move_stack[len(board.move_stack)]
+
 		if not validate(board, bestMove):
 			raise Exception(f"Move ${bestMove} is invalid")
-
 	except:
 		# Perform a random move on error
-		bestMove = antichess.legal_moves(board)[0]
-
+		bestMove = moves[0]
 	return bestMove
