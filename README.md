@@ -3,7 +3,8 @@
 ## Instructions
 
 ```
-python main.py {white / black}
+cd antichess
+python3 main.py {white / black}
 ```
 
 ## Techniques
@@ -13,3 +14,11 @@ python main.py {white / black}
 - Decrease search depth as it gets near the time allowance.
 
 - Increase search depth on specific branches with limited moves (<= 2), this is because feasible moves are usually restricted to captures in anti-chess.
+
+## Using Docker
+
+```
+docker build -t co456 .
+docker run -it --name co456 co456
+python3 main.py {white / black}
+```
