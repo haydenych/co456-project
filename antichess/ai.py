@@ -123,12 +123,7 @@ def getBestMove(board, depth):
 
 	bestMove = moves[0]
 	try:
-		# Handle first move
-		if len(board.move_stack) == 0:
-			bestMove = rBoard.move_stack[0]
-
-		else:
-			bestMove = rBoard.move_stack[len(board.move_stack)]
+		bestMove = rBoard.move_stack[len(board.move_stack)]
 
 		if not validate(board, bestMove):
 			raise Exception(f"Move ${bestMove} is invalid")
