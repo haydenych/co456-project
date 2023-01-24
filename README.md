@@ -22,3 +22,8 @@ docker build -t co456 .
 docker run -it --name co456 co456
 python3 main.py {white / black}
 ```
+
+## Results
+
+Ranked 2/36 in an in-class Swiss Tournament.
+Please check out this [link](https://djao.math.uwaterloo.ca/co456/standing.html) for more information.
